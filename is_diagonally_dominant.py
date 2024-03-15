@@ -6,4 +6,4 @@ def is_diagonally_dominant(mat):
 
     d = np.diag(np.abs(mat))
     s = np.sum(np.abs(mat), axis=1) - d 
-    return np.all(d >= s)
+    return np.all(d > s)
