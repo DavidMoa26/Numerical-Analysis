@@ -1,6 +1,6 @@
 import numpy as np
 
-def gaussian_elimination(A_b):
+def gauss(A_b):
     n = len(A_b)
     elementary_matrices = []
     matrix_states = []
@@ -71,19 +71,5 @@ def gaussian_elimination(A_b):
     x = A_b[:, -1]
     return x, elementary_matrices, matrix_states
 
-# Example usage
-A_b = np.array([
-    [0, 1, -1, -1],  # Augmented matrix [A|b]
-    [3, -1, 1, 4],
-    [1, 1, -2, -3]
-], dtype=float)
-
-try:
-    solution, elementary_matrices, matrix_states = gaussian_elimination(A_b)
-    print("\nFinal Solution:", solution)
-    # print("\nStates of Matrices:")
-    # for E in matrix_states:
-    #     print(E)
-    #     print()
-except ValueError as e:
-    print(e)
+if __name__ == '__main__':
+    print("X")

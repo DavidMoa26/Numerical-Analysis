@@ -1,65 +1,101 @@
-from colors import bcolors
-from matrix_utility import row_addition_elementary_matrix, scalar_multiplication_elementary_matrix
 import numpy as np
+from numpy.linalg import norm, inv
 
-"""
-Function that find the inverse of non-singular matrix
-The function performs elementary row operations to transform it into the identity matrix. 
-The resulting identity matrix will be the inverse of the input matrix if it is non-singular.
- If the input matrix is singular (i.e., its diagonal elements become zero during row operations), it raises an error.
-"""
+from colors import bcolors
 
-def matrix_inverse(matrix):
-    print(bcolors.OKBLUE, f"=================== Finding the inverse of a non-singular matrix using elementary row operations ===================\n {matrix}\n", bcolors.ENDC)
-    if matrix.shape[0] != matrix.shape[1]:
-        raise ValueError("Input matrix must be square.")
 
-    n = matrix.shape[0]
-    identity = np.identity(n)
+def gaussianElimination(mat):
+    N = len(mat)
 
-    # Perform row operations to transform the input matrix into the identity matrix
-    for i in range(n):
-        if matrix[i, i] == 0:
-            raise ValueError("Matrix is singular, cannot find its inverse.")
+    singular_flag = forward_substitution(mat)
 
-        if matrix[i, i] != 1:
-            # Scale the current row to make the diagonal element 1
-            scalar = 1.0 / matrix[i, i]
-            elementary_matrix = scalar_multiplication_elementary_matrix(n, i, scalar)
-            print(f"elementary matrix to make the diagonal element 1 :\n {elementary_matrix} \n")
-            matrix = np.dot(elementary_matrix, matrix)
-            print(f"The matrix after elementary operation :\n {matrix}")
-            print(bcolors.OKGREEN, "------------------------------------------------------------------------------------------------------------------",  bcolors.ENDC)
-            identity = np.dot(elementary_matrix, identity)
+    if singular_flag != -1:
 
-        # Zero out the elements above and below the diagonal
-        for j in range(n):
-            if i != j:
-                scalar = -matrix[j, i]
-                elementary_matrix = row_addition_elementary_matrix(n, j, i, scalar)
-                print(f"elementary matrix for R{j+1} = R{j+1} + ({scalar}R{i+1}):\n {elementary_matrix} \n")
-                matrix = np.dot(elementary_matrix, matrix)
-                print(f"The matrix after elementary operation :\n {matrix}")
-                print(bcolors.OKGREEN, "------------------------------------------------------------------------------------------------------------------",
-                      bcolors.ENDC)
-                identity = np.dot(elementary_matrix, identity)
+        if mat[singular_flag][N]:
+            return "Singular Matrix (Inconsistent System)"
+        else:
+            return "Singular Matrix (May have infinitely many solutions)"
 
-    return identity
+    # if matrix is non-singular: get solution to system using backward substitution
+    return backward_substitution(mat)
+
+
+# function for elementary operation of swapping two rows
+def swap_row(mat, i, j):
+    N = len(mat)
+    for k in range(N + 1):
+        temp = mat[i][k]
+        mat[i][k] = mat[j][k]
+        mat[j][k] = temp
+
+
+def forward_substitution(mat):
+    N = len(mat)
+    for k in range(N):
+
+        # Partial Pivoting: Find the pivot row with the largest absolute value in the current column
+        pivot_row = k
+        v_max = mat[pivot_row][k]
+        for i in range(k + 1, N):
+            if abs(mat[i][k]) > v_max:
+                v_max = mat[i][k]
+                pivot_row = i
+
+        # if a principal diagonal element is zero,it denotes that matrix is singular,
+        # and will lead to a division-by-zero later.
+        if not mat[pivot_row][k]:
+            return k  # Matrix is singular
+
+        # Swap the current row with the pivot row
+        if pivot_row != k:
+            swap_row(mat, k, pivot_row)
+        # End Partial Pivoting
+
+        for i in range(k + 1, N):
+
+            #  Compute the multiplier
+            m = mat[i][k] / mat[k][k]
+
+            # subtract fth multiple of corresponding kth row element
+            for j in range(k + 1, N + 1):
+                mat[i][j] -= mat[k][j] * m
+
+            # filling lower triangular matrix with zeros
+            mat[i][k] = 0
+
+    return -1
+
+
+# function to calculate the values of the unknowns
+def backward_substitution(mat):
+    N = len(mat)
+    x = np.zeros(N)  # An array to store solution
+
+    # Start calculating from last equation up to the first
+    for i in range(N - 1, -1, -1):
+
+        x[i] = mat[i][N]
+
+        # Initialize j to i+1 since matrix is upper triangular
+        for j in range(i + 1, N):
+            x[i] -= mat[i][j] * x[j]
+
+        x[i] = (x[i] / mat[i][i])
+
+    return x
 
 
 if __name__ == '__main__':
 
-    A = np.array([[1, 2, 3],
-                  [2, 3, 4],
-                  [3, 4, 6]])
+    A_b = [[1, -1, 2, -1, -8],
+        [2, -2, 3, -3, -20],
+        [1, 1, 1, 0, -2],
+        [1, -1, 4, 3, 4]]
 
-    try:
-        A_inverse = matrix_inverse(A)
-        print(bcolors.OKBLUE, "\nInverse of matrix A: \n", A_inverse)
-        print("=====================================================================================================================", bcolors.ENDC)
-
-    except ValueError as e:
-        print(str(e))
-
-
-
+    result = gaussianElimination(A_b)
+    if isinstance(result, str):
+        print(result)
+    else:
+        print(bcolors.OKBLUE,"\nSolution for the system:")
+        for x in result:
+            print("{:.6f}".format(x))
