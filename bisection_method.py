@@ -54,7 +54,7 @@ def bisection_method(f, a, b, tol=1e-6):
 
 
 if __name__ == '__main__':
-    f = lambda x: x**3 - 3*x**2
-    roots = bisection_method(f, 1, 3)
+    f = lambda x: (4.598945*x**2 - 27.712401*x+1.287599) / (4.598945*x**2 - 4.598945)
+    roots = bisection_method(f, 0, 3)
     print(bcolors.OKBLUE, f"\nThe equation f(x) has an approximate root at x = {roots}",bcolors.ENDC,)
 

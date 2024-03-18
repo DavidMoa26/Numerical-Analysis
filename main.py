@@ -2,51 +2,42 @@
 # Date: 19.02.2024
 # Group: Eytan Stryzhack 336244959, Daniel Boguslavsky 207915729, Shifra Avigdor 207067125, David Moalem 203387337
 # Git: https://github.com/DavidMoa26/Numerical-Analysis
-
 # Name: David Moalem 203387337
 
 
 import numpy as np
-from colors import bcolors
-from jacobi import jacobi_iterative
-from gauss_seidel import gauss_seidel
-from is_diagonally_dominant import is_diagonally_dominant
-from gauss import gauss
-from gaussian_elimination import gaussianElimination
-from inverse_matrix import inverse
-from cond import condition_number
-from norm import norm
+from LU_factorization import lu_solve
+from newton_raphson import newton_raphson
 
 if __name__ == '__main__':
-    A = np.array([
-        [0.913, 0.659],
-        [0.457, 0.330], 
-        ])
-    b = np.array([0.254, 0.127])
-    mat = np.column_stack((A, b))
+
+    def f(x):
+     numerator = 1.545455*x**2 - 8.636364*x + 7.454545
+     denominator = 3.454545*x**2 - 4.272727
+     return numerator / denominator
 
     
-    try:
-        # if not is_diagonally_dominant(A):
-        #     print("The matrix does not have diagonally dominant")
-        # else:
-        #     print("======== Jacobi Method ===========")
-        #     solution = jacobi_iterative(A,b,x)
-        #     print(bcolors.OKBLUE,"\nApproximate solution:", solution)
+    def f_prime(x):
+     numerator_prime = 1.63422369300636*x**2 - 3.54459038821842*x + 2.02127680986873
+     denominator_prime = 0.653689363667008*x**4 - 1.6170211670439*x**2 + 1.0
+     return numerator_prime / denominator_prime
 
-        #     print("======== Gauss seidel Method ===========")
-        #     solution = gauss_seidel(A, b, x)
-        #     print(bcolors.OKBLUE,"\nApproximate solution:", solution)
-        # res=gaussianElimination(mat)
-        # print(res)
-        # norm_A = norm(A)
-        # cond = condition_number(A)
-        # print("Condition number of A:", cond, "\n")
-        res=gaussianElimination(mat)
-        print(res)
-            
 
-    except ValueError as e:
-        print(str(e))
+
+    A = np.array([
+    [-1, 1, 3, -3, 1],
+    [3, -3, -4, 2, 3],
+    [2, 1, -5, -3, 5],
+    [-5, -6, 4, 1, 3],
+    [3, -2, -2, -3, 5]
+])
+    b = np.array([1, 18,6,22,10])
+    mat = np.column_stack((A, b))
+    print("Question 1 : ")
+    lu_solve(mat)
+    x0 = 1
+    print("\n\n Question 2 : ")
+    root = newton_raphson(f, f_prime, x0)
+    print(root)      
 
 
