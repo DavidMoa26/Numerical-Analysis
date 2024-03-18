@@ -1,10 +1,3 @@
-# Group git : https://github.com/danielbogus99/Numaric
-# Date: 19.02.2024
-# Group: Eytan Stryzhack 336244959, Daniel Boguslavsky 207915729, Shifra Avigdor 207067125, David Moalem 203387337
-# Git: https://github.com/DavidMoa26/Numerical-Analysis
-# Name: David Moalem 203387337
-
-
 import numpy as np
 from LU_factorization import lu_solve
 from newton_raphson import newton_raphson
