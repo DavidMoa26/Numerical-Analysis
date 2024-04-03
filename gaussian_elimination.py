@@ -32,7 +32,6 @@ def swap_row(mat, i, j):
 def forward_substitution(mat):
     N = len(mat)
     for k in range(N):
-
         # Partial Pivoting: Find the pivot row with the largest absolute value in the current column
         pivot_row = k
         v_max = mat[pivot_row][k]
@@ -87,7 +86,7 @@ def backward_substitution(mat):
 
 if __name__ == '__main__':
 
-    A_b = [[1, -1, 2, -1, -8],
+    A_b = [[0, -1, 2, -1, -8],
         [2, -2, 3, -3, -20],
         [1, 1, 1, 0, -2],
         [1, -1, 4, 3, 4]]

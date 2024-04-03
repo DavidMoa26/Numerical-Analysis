@@ -160,7 +160,7 @@ def CheckDominantDiagonal(matrix):
     return True
 
 
-def DominantDiagonalFix(matrix):
+def dominant_diagonal_fix(matrix):
     #Check if we have a dominant for each column
     dom = [0]*len(matrix)
     result = list()
@@ -187,7 +187,6 @@ def minusMatrix(matrix):
 
 def matrixAddition(matrixA, matrixB):
     return [[a + b for (a, b) in zip(i, j)] for (i, j) in zip(matrixA, matrixB)]
-
 
 
 def matrixDLUdissasembly(matrix):
@@ -324,68 +323,3 @@ def GaussSeidelMethod(matrix, vector, epsilon, previous, counter):
 
     # Recursive call
     GaussSeidelMethod(matrix, vector, epsilon,NextGuess,counter+1)
-
-
-
-
-matrixA = [ [4,2, 0],[2, 10, 4], [0, 4, 5]]
-b = [2,6,5]
-epsilon=0.00001
-flag = True
-
-input=int(input("Which method do u wanna use to solve the matrix? \n\t1.Jacobi \n\t2.GaussSeidel\n"))
-while (flag):
-    if input == 1 :
-        flag = False
-        # Jacobi
-        if CheckDominantDiagonal(matrixA):
-            print("\nThere is a dominant diagonal.")
-            print("\n ~~~ JacobiMethod ~~~\n")
-            JacobiMethod(matrixA,b,epsilon,InitVector(len(b)),1)
-
-        else:
-            print("There isn't a dominant diagonal.")
-            print("We will try to find dominant diagonal.")
-            dominantFix = DominantDiagonalFix(matrixA)
-            PrintMatrix(dominantFix)
-            if dominantFix != matrixA:
-                print("Found a dominant diagonal.")
-                print("\n ~~~ JacobiMethod ~~~\n")
-                JacobiMethod(dominantFix,b,epsilon,InitVector(len(b)),1)
-            else:
-                print("didnt find a dominant diagonal.")
-                if CheckJacobiGnorm(matrixA):
-                    print("The matrix convergent.")
-                    print("\n ~~~ JacobiMethod ~~~\n")
-                    JacobiMethod(matrixA,b,epsilon,InitVector(len(b)),1)
-                else:
-                    print("The matrix isn't convergent.")
-    elif input == 2:
-        flag = False
-        # geuss
-        if CheckDominantDiagonal(matrixA):
-            print("\nThere is a dominant diagonal.")
-            print("\n ~~~ GaussSeidelMethod ~~~\n")
-            GaussSeidelMethod(matrixA,b,epsilon,InitVector(len(b)),1)
-        else:
-            print("There isn't a dominant diagonal.")
-            print("We will try to find dominant diagonal.")
-            dominantFix=DominantDiagonalFix(matrixA)
-            PrintMatrix(dominantFix)
-            if dominantFix != matrixA:
-                print("Found a dominant diagonal.")
-                print("\n ~~~ GaussSeidelMethod ~~~\n")
-                GaussSeidelMethod(dominantFix,b,epsilon,InitVector(len(b)),1)
-            else:
-                print("didnt find a dominant diagonal.")
-                if CheckGaussSeidelGnorm(matrixA):
-                    print("The matrix convergent.")
-                    print("\n ~~~ GaussSeidelMethod ~~~\n")
-                    GaussSeidelMethod(matrixA,b,epsilon,InitVector(len(b)),1)
-                else:
-                    print("The matrix isn't convergent.")
-
-
-    else:
-        print("Invalid input")
-        break

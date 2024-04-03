@@ -25,10 +25,10 @@ def lu(A):
             # Swap the current row with the pivot row
             if pivot_row != i:
                 e_matrix = swap_rows_elementary_matrix(N, i, pivot_row)
-                # print(f"elementary matrix for swap between row {i} to row {pivot_row} :\n {e_matrix} \n")
+                print(f"elementary matrix for swap between row {i} to row {pivot_row} :\n {e_matrix} \n")
                 A = np.dot(e_matrix, A)
-                # print(f"The matrix after elementary operation :\n {A}")
-                # print(bcolors.OKGREEN,"---------------------------------------------------------------------------", bcolors.ENDC)
+                print(f"The matrix after elementary operation :\n {A}")
+                print(bcolors.OKGREEN,"---------------------------------------------------------------------------", bcolors.ENDC)
 
             for j in range(i + 1, N):
     
@@ -38,9 +38,9 @@ def lu(A):
                 e_inverse = np.linalg.inv(e_matrix)
                 L = np.dot(L, e_inverse)
                 A = np.dot(e_matrix, A)
-                # print(f"elementary matrix to zero the element in row {j} below the pivot in column {i} :\n {e_matrix} \n")
-                # print(f"The matrix after elementary operation :\n {A}")
-                # print(bcolors.OKGREEN,"---------------------------------------------------------------------------", bcolors.ENDC)
+                print(f"elementary matrix to zero the element in row {j} below the pivot in column {i} :\n {e_matrix} \n")
+                print(f"The matrix after elementary operation :\n {A}")
+                print(bcolors.OKGREEN,"---------------------------------------------------------------------------", bcolors.ENDC)
 
         U = A
         return L, U
@@ -66,24 +66,24 @@ def backward_substitution(mat):
 
 def lu_solve(A_b):
     L, U = lu(A_b)
-    # print("Lower triangular matrix L:\n", L)
-    # print("Upper triangular matrix U:\n", U)
+    print("Lower triangular matrix L:\n", L)
+    print("Upper triangular matrix U:\n", U)
 
     result = backward_substitution(U)
+    solution = []
     for x in result:
-        print("{:.6f}".format(x))
+        solution.append(round(x, 5))
+    
+    return solution
 
 
 if __name__ == '__main__':
 
 
-    A_b = np.array([
-    [2, 3, 4, 5, 6,70],
-    [-5, 3, 4, -2, 3,20],
-    [4, 4, 5, -5, 5,26],
-    [5, -2, -1, 3, 2,-12],
-    [-2, -3, 6, -3, 5,37]
-])
+    A_b = [[0, -1, 2, -1, -8],
+        [2, -2, 3, -3, -20],
+        [1, 1, 1, 0, -2],
+        [1, -1, 4, 3, 4]]
 
 
-    lu_solve(A_b)
+    print("\n",lu_solve(A_b))
