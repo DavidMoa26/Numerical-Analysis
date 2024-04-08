@@ -14,9 +14,12 @@ def calculate_error(a, b, n):
 
 
 if __name__ == "__main__":
-    f = np.sin
-    a = 0
-    b = np.pi
+    def f(x):
+        numerator = np.sin(x**3 + x**2 - 6)
+        denominator = 2 *np.e* np.exp(-2 * x)
+        return numerator / denominator
+    a = 4.1
+    b = 3
     n = 4
 
     I_approx = trapezoidal_rule(f, a, b, n)

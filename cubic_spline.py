@@ -1,97 +1,53 @@
-import jacobi_utilities
-from sympy import *
+import numpy as np
 
-x = Symbol('x')
+def compute_cubic_spline_coefficients(x, y):
+    n = len(x) - 1
+    h = [x[i+1] - x[i] for i in range(n)]
+    alpha = [3*(y[i+1] - y[i])/h[i] - 3*(y[i] - y[i-1])/h[i-1] for i in range(1, n)]
+    
+    # Set up the system of equations
+    l = [1] + [2*(h[i-1] + h[i]) for i in range(1, n)] + [1]
+    mu = [0] + [h[i]/(h[i-1] + h[i]) for i in range(1, n)]
+    z = [0] * (n + 1)
+    
+    # Forward elimination
+    for i in range(1, n):
+        l[i] = 2*(x[i+1] - x[i-1]) - h[i-1]*mu[i-1]
+        mu[i] = h[i] / l[i]
+        alpha[i-1] = (alpha[i-1] - h[i-1]*z[i-1]) / l[i]
+        z[i] = alpha[i-1] - mu[i]*z[i]
+    
+    # Back substitution
+    c = [0] * (n + 1)
+    b = [0] * n
+    d = [0] * n
+    for j in range(n-1, -1, -1):
+        c[j] = z[j] - mu[j]*c[j+1]
+        b[j] = (y[j+1] - y[j])/h[j] - h[j]*(c[j+1] + 2*c[j])/3
+        d[j] = (c[j+1] - c[j])/(3*h[j])
+    
+    # Coefficients for the cubic spline
+    a = y[:-1]
+    return a, b, c[:-1], d
 
+def evaluate_natural_cubic_spline(x, y, x_vals):
+    a, b, c, d = compute_cubic_spline_coefficients(x, y)
+    y_vals = []
+    for x_val in x_vals:
+        for i in range(len(x) - 1):
+            if x[i] <= x_val <= x[i+1]:
+                dx = x_val - x[i]
+                y_val = a[i] + b[i]*dx + c[i]*dx**2 + d[i]*dx**3
+                y_vals.append(y_val)
+                break
+    return round(y_vals[0], 1), round(y_vals[1], 1)
 
-def natural_cubic_spline(f, x0):
-    h = list()
-    for i in range(len(f) - 1):
-        h.append(f[i + 1][0] - f[i][0])
+# Data points
+x_data = np.array([0.2, 0.35, 0.45, 0.6, 0.75])
+y_data = np.array([3.7241, 3.9776, 4.0625, 2.9776, 3.7241])
 
-    g = list()
-    g.append(0)  # g0
-    for i in range(1, len(f) - 1):
-        g.append(h[i] / (h[i] + h[i - 1]))
-    g.append(0)  # gn
+# Points to evaluate the spline
+x_vals = [0.4, 0.65]
 
-    m = list()
-    m.append(0)
-    for i in range(1, len(f)):
-        m.append(1 - g[i])
-
-    d = list()
-    d.append(0)  # d0=0
-    for i in range(1, len(f) - 1):
-        d.append((6 / (h[i - 1] + h[i])) * (((f[i + 1][1] - f[i][1]) / h[i]) - ((f[i][1] - f[i - 1][1]) / h[i - 1])))
-    d.append(0)  # dn
-
-    # building the matrix
-    mat = list()
-
-    # first row
-    mat.append(list())
-    mat[0].append(2)
-    for j in range(len(f) - 1):
-        mat[0].append(0)
-
-    for i in range(1, len(f) - 1):
-        mat.append(list())
-        for j in range(len(f)):
-            if j == i - 1:  # put miu
-                mat[i].append(m[i])
-            elif j == i:
-                mat[i].append(2)
-            elif j == i + 1:  # put lambda
-                mat[i].append(g[i])
-            else:
-                mat[i].append(0)
-
-    # last row
-    mat.append(list())
-    for j in range(len(f) - 1):
-        mat[len(f) - 1].append(0)
-    mat[len(f) - 1].append(2)
-
-    print("matrix: " + str(mat))
-    print("vector b: " + str(d))
-
-    # get m vector
-    print("\nJacobi middle results: ")
-    M = (jacobi_utilities.Jacobi(mat, d))
-    print("\nvector M: " + str(list(map(float, M))))
-
-    # find S:
-    for loc in range(1, len(f)):
-        s = (((f[loc][0] - x) ** 3) * M[loc - 1] + ((x - f[loc - 1][0]) ** 3) * M[loc]) / (6 * h[loc - 1])
-        s += (((f[loc][0] - x) * f[loc - 1][1]) + ((x - f[loc - 1][0]) * f[loc][1])) / h[loc - 1]
-        s -= (((f[loc][0] - x) * M[loc - 1] + (x - f[loc - 1][0]) * M[loc]) * h[loc - 1]) / 6
-        print("s" + str(loc - 1) + "(x) = " + str(s))
-
-    # find the location of x0:
-    loc = 0
-    for i in range(1, len(f)):
-        if x0 < f[i][0] and x0 > f[i - 1][0]:
-            loc = i
-            break
-
-    if loc == 0:
-        print("no range found for x0")
-        return
-
-    s = (((f[loc][0] - x) ** 3) * M[loc - 1] + ((x - f[loc - 1][0]) ** 3) * M[loc]) / (6 * h[loc - 1])
-    s += (((f[loc][0] - x) * f[loc - 1][1]) + ((x - f[loc - 1][0]) * f[loc][1])) / h[loc - 1]
-    s -= (((f[loc][0] - x) * M[loc - 1] + (x - f[loc - 1][0]) * M[loc]) * h[loc - 1]) / 6
-
-    print("\nx0 between f(x" + str(loc - 1) + ") = " + str(f[loc - 1][0]) + " and f(x" + str(loc) + ") = " + str(
-        f[loc][0]) + " so:")
-    print("s" + str(loc - 1) + "(" + str(x0) + ") = " + str(float(s.subs(x, x0))))
-
-
-if __name__ == '__main__':
-    f = [(1, 1), (2, 2), (3, 1), (4, 1.5), (5, 1)]
-    x0 = 6
-
-    print("func: " + str(f))
-    print("x0 = " + str(x0) + "\n")
-    natural_cubic_spline(f, x0)
+# Evaluate the spline
+y_vals = evaluate_natural_cubic_spline(x_data, y_data, x_vals)

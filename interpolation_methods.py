@@ -30,23 +30,27 @@ def lagrange_interpolation(points, x):
     return total
 
 if __name__ == "__main__":
-    points = [(1,1) , (2,0) , (4,1.5)]
-    x_value = 3
-    method = input("Choose the interpolation method : \n1.linear\n2.polynomial\n3.lagrange\n").lower()
+    x_data = np.array([0.2, 0.35, 0.45, 0.6, 0.75])
+    y_data = np.array([3.7241, 3.9776, 4.0625, 2.9776, 3.7241]) 
+    points = [(0.2,3.7241) , (0.35,3.9776) , (0.45,4.0625),(0.6,2.9776),(0.75,3.7241)]
+    x_value = 0.65
+    # method = input("Choose the interpolation method : \n1.linear\n2.polynomial\n3.lagrange\n").lower()
     
-    if method == "1":
-        y_value = linear_interpolation(points, x_value)
-    elif method == "2":
-        y_value = polynomial_interpolation(points, x_value)
-    elif method == "3":
-        y_value = lagrange_interpolation(points, x_value)
-    else:
-        print("Invalid method chosen.")
-        y_value = None
+    # if method == "1":
+    #     y_value = linear_interpolation(points, x_value)
+    # elif method == "2":
+    #     y_value = polynomial_interpolation(points, x_value)
+    # elif method == "3":
+    #     y_value = lagrange_interpolation(points, x_value)
+    # else:
+    #     print("Invalid method chosen.")
+    #     y_value = None
 
-    if y_value is not None:
-        print(f"The approximated y value for x = {x_value} is: {y_value}")
-    else:
-        print("Could not find an approximated y value.")
+    # if y_value is not None:
+    #     print(f"The approximated y value for x = {x_value} is: {y_value}")
+    # else:
+    #     print("Could not find an approximated y value.")
 
+    res = polynomial_interpolation(points, x_value)
+    print(res)
     
