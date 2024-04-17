@@ -51,3 +51,4 @@ x_vals = [0.4, 0.65]
 
 # Evaluate the spline
 y_vals = evaluate_natural_cubic_spline(x_data, y_data, x_vals)
+print(y_vals)

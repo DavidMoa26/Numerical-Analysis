@@ -6,29 +6,30 @@
 
 import numpy as np
 import sympy as sp
-from cubic_spline import evaluate_natural_cubic_spline
 from trapezoidal_rule import trapezoidal_rule, calculate_error
 from Romberg_method import romberg_integration
 from interpolation_methods import polynomial_interpolation
 import math
+from scipy.interpolate import CubicSpline
+
 
 
 
 if __name__ == '__main__':
    # Data points
-    x_data = np.array([0.2, 0.35, 0.45, 0.6, 0.75])
-    y_data = np.array([3.7241, 3.9776, 4.0625, 2.9776, 3.7241]) 
+    points = [(0.2,3.7241) , (0.35,3.9776) , (0.45,4.0625),(0.6,2.9776),(0.75,3.7241)]
 
-    # Points to evaluate the spline
-    x_vals = [0.4, 0.65]
-    res1,res2 = evaluate_natural_cubic_spline(x_data, y_data, x_vals)
-    print(res1,res2)
+    res1 = round(polynomial_interpolation(points, 0.65) , 1)
+    res2 = round(polynomial_interpolation(points, 0.4) ,1)
+
+    print(f"polynomial_interpolation :  value at x=0.65 is {res1}")
+    print(f"polynomial_interpolation : value at x=0.4 is {res2}")
 
     def f(x):
         return np.sin(x**3 + x**2 - 6) / (2 * np.exp(-2*x))
     
-    integral = romberg_integration(f, res1, res2, 5)
-    print(integral)
+    integral = round(romberg_integration(f, res1, res2, 10) ,5)
+    print(f"romberg_integration : value of integral is {integral}")
 
 
 
